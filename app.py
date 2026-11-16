@@ -134,7 +134,7 @@ if prompt := st.chat_input("Fala com a Gaia..."):
                 )
 
             response = client.models.generate_content(
-                model='gemini-2.5-flash',
+                model='gemini-3.8-flash',
                 contents=contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
@@ -151,4 +151,4 @@ if prompt := st.chat_input("Fala com a Gaia..."):
         except Exception as e:
             erro_msg = f"Senti uma pequena turbulência nos ramos digitais: {e}"
             message_placeholder.markdown(erro_msg)
-          
+            
