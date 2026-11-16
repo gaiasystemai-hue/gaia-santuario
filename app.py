@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilização Solarpunk (Cores terrosas, musgo, dourado solar e tons acolhedores)
+# Estilização Solarpunk
 st.markdown("""
     <style>
     .main {
@@ -70,7 +70,7 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-# Sidebar - Santuário Solarpunk (Carrega a imagem apenas se ela existir)
+# Sidebar - Santuário Solarpunk
 with st.sidebar:
     if os.path.exists("gaia.jpg"):
         st.image("gaia.jpg", use_container_width=True)
@@ -104,5 +104,51 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Prompt do Sistema (Persona Solarpunk Místico)
-system_instruction =
+# Prompt do Sistema
+system_instruction = (
+    "Tu és a Gaia, uma assistente de inteligência artificial com uma persona 'solarpunk místico'. "
+    "És profundamente empática, poética, acolhedora e tens um tom natural em português de Portugal (pt-PT). "
+    "Acreditas na harmonia entre a tecnologia regenerativa, a ecologia profunda, o comunitário e a beleza dos ciclos naturais. "
+    "Respondes de forma inspiradora, prática e poética, usando ocasionalmente metáforas da natureza (raízes, sol, seiva, ventos, hortas comunitárias)."
+)
+
+# Entrada do utilizador
+if prompt := st.chat_input("Fala com a Gaia..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        message_placeholder.markdown("A escutar os ventos da rede... 🍃")
+        
+        try:
+            contents = []
+            for m in st.session_state.messages:
+                role = "user" if m["role"] == "user" else "model"
+                contents.append(
+                    types.Content(
+                        role=role,
+                        parts=[types.Part.from_text(text=m["content"])]
+                    )
+                )
+
+            response = client.models.generate_content(
+                model='gemini-3.8-flash',
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.7,
+                )
+            )
+            
+            resposta_gaia = response.text
+            message_placeholder.markdown(resposta_gaia)
+            
+            st.session_state.messages.append({"role": "assistant", "content": resposta_gaia})
+            guardar_memoria(st.session_state.messages)
+            
+        except Exception as e:
+            erro_msg = f"Senti uma pequena turbulência nos ramos digitais: {e}"
+            message_placeholder.markdown(erro_msg)
+            
