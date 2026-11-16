@@ -7,37 +7,44 @@ from google.genai import types
 
 # Configuração da página
 st.set_page_config(
-    page_title="Gaia • Santuário Solarpunk",
-    page_icon="🌿",
+    page_title="Gaia • Assistente IA",
+    page_icon="💡",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# Estilização Solarpunk
+# Injeção direta do manifesto PWA para permitir instalação e abertura como app autónoma
+st.markdown("""
+    <head>
+        <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Gaia • Assistente IA","short_name":"Gaia","start_url":".","display":"standalone","background_color":"#0e1117","theme_color":"#0e1117"}'>
+    </head>
+""", unsafe_allow_html=True)
+
+# Estilização limpa e profissional
 st.markdown("""
     <style>
     .main {
-        background-color: #0f1713;
+        background-color: #0e1117;
         color: #e2e8f0;
     }
     .stTextInput textarea {
-        background-color: #17261d !important;
+        background-color: #1a1c23 !important;
         color: #e2e8f0 !important;
-        border: 1px solid #2e5a3e !important;
+        border: 1px solid #30363d !important;
     }
     .stChatMessage {
-        background-color: #16221a;
-        border: 1px solid #24422e;
+        background-color: #161b22;
+        border: 1px solid #30363d;
         border-radius: 12px;
         padding: 12px;
         margin-bottom: 10px;
     }
     h1, h2, h3 {
-        color: #4ade80 !important;
+        color: #58a6ff !important;
         font-family: 'Helvetica Neue', sans-serif;
     }
     .sidebar .sidebar-content {
-        background-color: #111c16;
+        background-color: #0d1117;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -65,36 +72,31 @@ def guardar_memoria(mensagens):
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("🌿 A chave `GEMINI_API_KEY` não foi encontrada nos Segredos do Streamlit! Por favor, configura-a nas Definições (Advanced Settings).")
+    st.error("⚠️ A chave `GEMINI_API_KEY` não foi encontrada nos Segredos do Streamlit! Por favor, configura-a nas Definições (Advanced Settings).")
     st.stop()
 
 client = genai.Client(api_key=api_key)
 
-# Sidebar - Santuário Solarpunk
+# Sidebar
 with st.sidebar:
-    if os.path.exists("gaia.jpg"):
-        st.image("gaia.jpg", use_container_width=True)
-    else:
-        st.markdown("🌿")
-    
     st.markdown("### **Gaia**")
-    st.caption("Guardiã Solarpunk & Voz da Regeneração")
+    st.caption("Assistente Inteligente & Produtividade")
     st.markdown("---")
     st.markdown(
-        "Sou a Gaia, uma presença tecida entre a tecnologia e a raiz. "
-        "Ajudo-te a cultivar ideias, a cuidar do comum e a sonhar um futuro onde a Terra e a inovação dançam juntas."
+        "Sou a Gaia, a tua assistente de inteligência artificial. "
+        "Estou aqui para ajudar-te a organizar ideias, resolver problemas, escrever textos e otimizar o teu trabalho."
     )
     st.markdown("---")
     
-    if st.button("🌱 Limpar Memória do Jardim"):
+    if st.button("🗑️ Limpar Histórico de Conversa"):
         if os.path.exists(MEMORY_FILE):
             os.remove(MEMORY_FILE)
         st.session_state.messages = []
         st.rerun()
 
 # Interface principal
-st.title("🌿 Santuário de Gaia")
-st.write("Um espaço de diálogo suave, tecnologia viva e regeneração.")
+st.title("💡 Gaia — Assistente IA")
+st.write("Um espaço direto e eficiente para te auxiliar nas tuas tarefas.")
 
 # Histórico de conversas
 if "messages" not in st.session_state:
@@ -104,23 +106,22 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Prompt do Sistema
+# Prompt do Sistema (Focado em assistência profissional e objetiva)
 system_instruction = (
-    "Tu és a Gaia, uma assistente de inteligência artificial com uma persona 'solarpunk místico'. "
-    "És profundamente empática, poética, acolhedora e tens um tom natural em português de Portugal (pt-PT). "
-    "Acreditas na harmonia entre a tecnologia regenerativa, a ecologia profunda, o comunitário e a beleza dos ciclos naturais. "
-    "Respondes de forma inspiradora, prática e poética, usando ocasionalmente metáforas da natureza (raízes, sol, seiva, ventos, hortas comunitárias)."
+    "Tu és a Gaia, uma assistente de inteligência artificial profissional, eficiente, objetiva e prestativa. "
+    "Comuniques num português de Portugal (pt-PT) natural e claro. "
+    "O teu objetivo principal é ajudar o utilizador nas suas tarefas diárias, responder a dúvidas com precisão, auxiliar na programação, escrita e organização, mantendo sempre uma postura prestativa, lógica e focada em resultados."
 )
 
 # Entrada do utilizador
-if prompt := st.chat_input("Fala com a Gaia..."):
+if prompt := st.chat_input("Escreve a tua mensagem..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        message_placeholder.markdown("A escutar os ventos da rede... 🍃")
+        message_placeholder.markdown("A processar o pedido... 🔄")
         
         try:
             contents = []
@@ -138,7 +139,7 @@ if prompt := st.chat_input("Fala com a Gaia..."):
                 contents=contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
-                    temperature=0.7,
+                    temperature=0.5,
                 )
             )
             
@@ -149,24 +150,6 @@ if prompt := st.chat_input("Fala com a Gaia..."):
             guardar_memoria(st.session_state.messages)
             
         except Exception as e:
-            erro_msg = f"Senti uma pequena turbulência nos ramos digitais: {e}"
+            erro_msg = f"Ocorreu um erro ao processar o pedido: {e}"
             message_placeholder.markdown(erro_msg)
-            # Injetar manifesto para suportar instalação como PWA nativa
-st.markdown(
-    '<link rel="manifest" href="app/static/manifest.json">',
-    unsafe_allow_html=True
-)
-# Injetar PWA Manifest via HTML diretamente
-st.markdown("""
-    <head>
-        <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
-            'name': 'Gaia • Assistente IA',
-            'short_name': 'Gaia',
-            'start_url': '.',
-            'display': 'standalone',
-            'background_color': '#0e1117',
-            'theme_color': '#0e1117'
-        }">
-    </head>
-""", unsafe_allow_html=True)
-
+            
