@@ -151,4 +151,22 @@ if prompt := st.chat_input("Fala com a Gaia..."):
         except Exception as e:
             erro_msg = f"Senti uma pequena turbulência nos ramos digitais: {e}"
             message_placeholder.markdown(erro_msg)
-            
+            # Injetar manifesto para suportar instalação como PWA nativa
+st.markdown(
+    '<link rel="manifest" href="app/static/manifest.json">',
+    unsafe_allow_html=True
+)
+# Injetar PWA Manifest via HTML diretamente
+st.markdown("""
+    <head>
+        <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
+            'name': 'Gaia • Assistente IA',
+            'short_name': 'Gaia',
+            'start_url': '.',
+            'display': 'standalone',
+            'background_color': '#0e1117',
+            'theme_color': '#0e1117'
+        }">
+    </head>
+""", unsafe_allow_html=True)
+
