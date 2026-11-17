@@ -62,19 +62,19 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Gerar resposta com o Gemini mais recente
+        # Gerar resposta com o Gemini otimizado
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            message_placeholder.markdown("A cultivar pensamentos...")
+            message_placeholder.markdown("🌱 A cultivar pensamentos...")
             
             try:
-                # Atualizado para o modelo gemini-3.8-flash (rápido, inteligente e atualizado)
+                # Utiliza o modelo mais recente e fluido para garantir respostas imediatas
                 response = client.models.generate_content(
-                    model='gemini-3.8-flash',
+                    model='gemini-2.5-flash',
                     contents=prompt,
                     config={
                         'system_instruction': (
-                            "Tu és a Gaia, uma inteligência artificial de altíssimo nível, acolhedora, com uma persona solarpunk. "
+                            "Tu és a Gaia, uma inteligência artificial acolhedora, com uma persona solarpunk. "
                             "Focas-te na natureza, na empatia, na regeneração, na ciência e na inovação sustentável. "
                             "Responde sempre de forma clara, profunda, estruturada e em português de Portugal (pt-PT)."
                         ),
@@ -82,12 +82,16 @@ else:
                     }
                 )
                 
-                reply = response.text
+                if response and hasattr(response, 'text') and response.text:
+                    reply = response.text
+                else:
+                    reply = "Senti uma brisa leve nos ramos digitais e não consegui gerar texto. Podes repetir, por favor?"
+                
                 message_placeholder.markdown(reply)
                 st.session_state.messages.append({"role": "assistant", "content": reply})
                 
             except Exception as e:
-                error_msg = f"Senti uma perturbação nos ramos digitais: {e}"
+                error_msg = f"Senti uma perturbação nos ramos digitais: `{e}`"
                 message_placeholder.markdown(error_msg)
                 st.session_state.messages.append({"role": "assistant", "content": error_msg})
                 
