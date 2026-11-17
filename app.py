@@ -68,7 +68,7 @@ else:
             message_placeholder.markdown("🌱 A cultivar pensamentos...")
             
             try:
-                # Utiliza o modelo gemini-3.8-flash recomendado
+                # Utiliza obrigatoriamente o modelo gemini-3.8-flash que está ativo na API
                 response = client.models.generate_content(
                     model='gemini-3.8-flash',
                     contents=prompt,
