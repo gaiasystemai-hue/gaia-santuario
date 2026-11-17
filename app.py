@@ -62,15 +62,15 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Gerar resposta com o Gemini otimizado
+        # Gerar resposta com o Gemini utilizando rigorosamente o modelo recomendado
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             message_placeholder.markdown("🌱 A cultivar pensamentos...")
             
             try:
-                # Utiliza o modelo mais recente e fluido para garantir respostas imediatas
+                # Utiliza o modelo gemini-3.8-flash conforme estipulado pela própria mensagem de erro da API
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.8-flash',
                     contents=prompt,
                     config={
                         'system_instruction': (
