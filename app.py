@@ -95,3 +95,7 @@ else:
                 message_placeholder.markdown(error_msg)
                 st.session_state.messages.append({"role": "assistant", "content": error_msg})
                 
+import streamlit as st
+
+# Exemplo de como carregar uma imagem guardada na pasta 'assets'
+st.image("assets/a_tua_imagem.png", caption="Legenda opcional")
