@@ -30,19 +30,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Cabeçalho da aplicação com tratamento seguro para imagem (evita crash se o nome mudar)
+# Cabeçalho da aplicação
 st.markdown("<h1>🌿 Gaia</h1>", unsafe_allow_html=True)
 st.markdown("<p style='color: #94a3b8; font-size: 14px;'>Assistente Inteligente & Regeneração</p>", unsafe_allow_html=True)
-
-# Bloco opcional seguro para exibir uma imagem se a quiseres colocar na raiz (ex: avatar.jpg)
-try:
-    if os.path.exists("avatar.jpg"):
-        st.image("avatar.jpg", width=80)
-    elif os.path.exists("trashed-1797465583-avatar.jpg"):
-        st.image("trashed-1797465583-avatar.jpg", width=80)
-except Exception:
-    pass
-
 st.markdown("---")
 
 # Obter a chave API do Gemini (dos Secrets do Streamlit ou do ambiente)
@@ -78,7 +68,7 @@ else:
             message_placeholder.markdown("🌱 A cultivar pensamentos...")
             
             try:
-                # Utiliza o modelo gemini-3.8-flash conforme recomendado pela API
+                # Utiliza o modelo gemini-3.8-flash recomendado
                 response = client.models.generate_content(
                     model='gemini-3.8-flash',
                     contents=prompt,
