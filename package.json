@@ -1,0 +1,12 @@
+{
+  "name": "gaia-pwa",
+  "version": "1.0.0",
+  "description": "Gaia Assistente PWA",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo 'Frontend estático e serverless functions'"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.1"
+  }
+}
