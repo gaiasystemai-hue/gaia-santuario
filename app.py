@@ -35,11 +35,11 @@ st.markdown("<h1>🌿 Gaia</h1>", unsafe_allow_html=True)
 st.markdown("<p style='color: #94a3b8; font-size: 14px;'>Assistente Inteligente & Regeneração</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Obter a chave API do Gemini (dos Secrets do Streamlit ou do ambiente)
-api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+# Obter a chave API do Gemini (dos Secrets/Environment Variables da Vercel)
+api_key = st.secrets.get("GEMINI_API_KEY") if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets else os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("⚠️ Chave da API do Gemini não configurada. Por favor, adiciona a `GEMINI_API_KEY` nos Secrets do Streamlit.")
+    st.error("⚠️ Chave da API do Gemini não configurada. Por favor, adiciona a `GEMINI_API_KEY` nas Environment Variables da Vercel.")
 else:
     # Inicializar o cliente do Google GenAI
     client = genai.Client(api_key=api_key)
@@ -68,7 +68,6 @@ else:
             message_placeholder.markdown("🌱 A cultivar pensamentos...")
             
             try:
-                # Utiliza obrigatoriamente o modelo gemini-3.8-flash que está ativo na API
                 response = client.models.generate_content(
                     model='gemini-3.8-flash',
                     contents=prompt,
