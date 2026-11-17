@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from google import genai
+import anthropic
 
 # Configuração da página em modo mobile-first / full-screen
 st.set_page_config(
@@ -32,22 +32,22 @@ st.markdown("""
 
 # Cabeçalho da aplicação
 st.markdown("<h1>🌿 Gaia</h1>", unsafe_allow_html=True)
-st.markdown("<p style='color: #94a3b8; font-size: 14px;'>Assistente Inteligente & Regeneração</p>", unsafe_allow_html=True)
+st.markdown("<p style='color: #94a3b8; font-size: 14px;'>Assistente Inteligente & Regeneração (Powered by Claude)</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Obter a chave API (do Streamlit Secrets ou do ambiente)
-api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+# Obter a chave API do Claude (podes gerir nos Secrets do Streamlit como ANTHROPIC_API_KEY)
+api_key = st.secrets.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
 
 if not api_key:
-    st.error("⚠️ Chave da API do Gemini não configurada. Por favor, adiciona a `GEMINI_API_KEY` nos Secrets do Streamlit.")
+    st.error("⚠️ Chave da API do Anthropic (Claude) não configurada. Por favor, adiciona a `ANTHROPIC_API_KEY` nos Secrets do Streamlit.")
 else:
-    # Inicializar o cliente do Google GenAI
-    client = genai.Client(api_key=api_key)
+    # Inicializar o cliente do Anthropic
+    client = anthropic.Anthropic(api_key=api_key)
 
     # Histórico de conversação na sessão
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Olá! Sou a Gaia, a tua assistente de raízes solarpunks. Como posso ajudar-te a cultivar as tuas ideias hoje?"}
+            {"role": "assistant", "content": "Olá! Sou a Gaia, a tua assistente de raízes solarpunks alimentada pelo Claude. Como posso ajudar-te a cultivar as tuas ideias hoje?"}
         ]
 
     # Mostrar mensagens anteriores
@@ -62,28 +62,31 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Gerar resposta com o Gemini utilizando rigorosamente o modelo recomendado
+        # Gerar resposta com o Claude
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            message_placeholder.markdown("🌱 A cultivar pensamentos...")
+            message_placeholder.markdown("🌱 A cultivar pensamentos com o Claude...")
             
             try:
-                # Utiliza o modelo gemini-3.8-flash conforme estipulado pela própria mensagem de erro da API
-                response = client.models.generate_content(
-                    model='gemini-3.8-flash',
-                    contents=prompt,
-                    config={
-                        'system_instruction': (
-                            "Tu és a Gaia, uma inteligência artificial acolhedora, com uma persona solarpunk. "
-                            "Focas-te na natureza, na empatia, na regeneração, na ciência e na inovação sustentável. "
-                            "Responde sempre de forma clara, profunda, estruturada e em português de Portugal (pt-PT)."
-                        ),
-                        'temperature': 0.7,
-                    }
+                # Construir o histórico no formato exigido pela API do Claude
+                formatted_messages = [
+                    {"role": m["role"], "content": m["content"]}
+                    for m in st.session_state.messages
+                ]
+
+                response = client.messages.create(
+                    model="claude-3-5-sonnet-20241022",
+                    max_tokens=1024,
+                    system=(
+                        "Tu és a Gaia, uma inteligência artificial acolhedora, com uma persona solarpunk. "
+                        "Focas-te na natureza, na empatia, na regeneração, na ciência e na inovação sustentável. "
+                        "Responde sempre de forma clara, profunda, estruturada e em português de Portugal (pt-PT)."
+                    ),
+                    messages=formatted_messages
                 )
                 
-                if response and hasattr(response, 'text') and response.text:
-                    reply = response.text
+                if response and response.content:
+                    reply = response.content[0].text
                 else:
                     reply = "Senti uma brisa leve nos ramos digitais e não consegui gerar texto. Podes repetir, por favor?"
                 
