@@ -62,22 +62,20 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Gerar resposta com o Gemini otimizado para alta inteligência
+        # Gerar resposta com o Gemini mais recente
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             message_placeholder.markdown("A cultivar pensamentos...")
             
             try:
-                # Usamos o gemini-2.5-pro (ou modelo de alta capacidade equivalente) para máxima inteligência
-                # Mantendo parâmetros focados em respostas precisas e ricas
+                # Atualizado para o modelo gemini-3.8-flash (rápido, inteligente e atualizado)
                 response = client.models.generate_content(
-                    model='gemini-2.5-pro',
+                    model='gemini-3.8-flash',
                     contents=prompt,
                     config={
                         'system_instruction': (
                             "Tu és a Gaia, uma inteligência artificial de altíssimo nível, acolhedora, com uma persona solarpunk. "
                             "Focas-te na natureza, na empatia, na regeneração, na ciência e na inovação sustentável. "
-                            "Tens capacidade avançada de raciocínio analítico e criativo. "
                             "Responde sempre de forma clara, profunda, estruturada e em português de Portugal (pt-PT)."
                         ),
                         'temperature': 0.7,
@@ -92,3 +90,4 @@ else:
                 error_msg = f"Senti uma perturbação nos ramos digitais: {e}"
                 message_placeholder.markdown(error_msg)
                 st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                
